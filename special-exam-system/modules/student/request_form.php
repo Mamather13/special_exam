@@ -51,19 +51,65 @@
 <label>Teacher Name:</label><br>
 <input type="text" name="teacher_name"><br><br>
 
-<label>Reason for Special Exam:</label><br>
-<textarea name="reason"></textarea><br><br>
+<label>Reason for Special Exam</label>
+
+<select name="reason_type" required>
+
+<option value="">Select reason</option>
+
+<option value="medical">Medical</option>
+
+<option value="death">Death of Relative</option>
+
+<option value="personal">Personal Reason</option>
+
+<option value="others">Others</option>
+
+</select>
+
 
 <h3>Parent Verification</h3>
 
-<label>Parent ID (Front):</label><br>
-<input type="file" name="parent_id_front"><br><br>
+<h3>Parent ID (Front)</h3>
 
-<label>Parent ID (Back):</label><br>
-<input type="file" name="parent_id_back"><br><br>
+<input 
+type="file" 
+name="parent_id_front"
+accept="image/*"
+capture="environment"
+required>
 
-<label>Parent Selfie holding ID:</label><br>
-<input type="file" name="parent_selfie"><br><br>
+<p>Use camera or upload image</p>
+
+<canvas id="preview_parent_id_front" width="250"></canvas>
+<p id="result_parent_id_front"></p>
+
+
+<h3>Parent ID (Back)</h3>
+
+<input 
+type="file" 
+name="parent_id_back"
+accept="image/*"
+capture="environment"
+required>
+
+<canvas id="preview_parent_id_back" width="250"></canvas>
+<p id="result_parent_id_back"></p>
+
+
+<h3>Parent Selfie with ID</h3>
+
+<input 
+type="file" 
+name="parent_selfie"
+accept="image/*"
+capture="user"
+required>
+
+<canvas id="preview_parent_selfie" width="250"></canvas>
+<p id="result_parent_selfie"></p>
+
 
 <h3>Digital Signature</h3>
 
@@ -77,11 +123,27 @@
 
 <h3>Supporting Documents</h3>
 
-<label>Medical Certificate:</label><br>
-<input type="file" name="medical_certificate"><br><br>
+<h3>Medical Certificate (if applicable)</h3>
 
-<label>Death Certificate:</label><br>
-<input type="file" name="death_certificate"><br><br>
+<input 
+type="file" 
+name="medical_certificate"
+accept="image/*,.pdf">
+
+<canvas id="preview_medical_certificate" width="250"></canvas>
+<p id="result_medical_certificate"></p>
+
+
+<h3>Death Certificate (if applicable)</h3>
+
+<input 
+type="file" 
+name="death_certificate"
+accept="image/*,.pdf">
+
+<canvas id="preview_death_certificate" width="250"></canvas>
+<p id="result_death_certificate"></p>
+
 
 <label>Other Supporting Document:</label><br>
 <input type="file" name="supporting_document"><br><br>
@@ -129,6 +191,132 @@ alert("Signature saved");
 }
 
 </script>
+
+<script>
+
+function checkBlur(fileInput, canvasId, resultId){
+
+fileInput.addEventListener("change", function(){
+
+const file = this.files[0];
+
+if(!file) return;
+
+const img = new Image();
+
+img.onload = function(){
+
+const canvas = document.getElementById(canvasId);
+
+const ctx = canvas.getContext("2d");
+
+canvas.width = 250;
+canvas.height = img.height * (250/img.width);
+
+ctx.drawImage(img,0,0,canvas.width,canvas.height);
+
+const imageData = ctx.getImageData(
+0,
+0,
+canvas.width,
+canvas.height
+);
+
+let sum = 0;
+
+for(let i=0;i<imageData.data.length;i+=4){
+
+sum += Math.abs(
+
+imageData.data[i] -
+imageData.data[i+1]
+
+);
+
+}
+
+let score = sum / imageData.data.length;
+
+const result = document.getElementById(resultId);
+
+if(score < 20){
+
+result.innerHTML = "⚠ Image may be blurry. Please retake.";
+
+result.style.color="red";
+
+fileInput.value="";
+
+}else{
+
+result.innerHTML = "✔ Image looks clear";
+
+result.style.color="green";
+
+}
+
+};
+
+img.src = URL.createObjectURL(file);
+
+});
+
+}
+
+/* attach blur detection */
+
+checkBlur(
+
+document.querySelector("[name=parent_id_front]"),
+
+"preview_parent_id_front",
+
+"result_parent_id_front"
+
+);
+
+checkBlur(
+
+document.querySelector("[name=parent_id_back]"),
+
+"preview_parent_id_back",
+
+"result_parent_id_back"
+
+);
+
+checkBlur(
+
+document.querySelector("[name=parent_selfie]"),
+
+"preview_parent_selfie",
+
+"result_parent_selfie"
+
+);
+
+checkBlur(
+
+document.querySelector("[name=medical_certificate]"),
+
+"preview_medical_certificate",
+
+"result_medical_certificate"
+
+);
+
+checkBlur(
+
+document.querySelector("[name=death_certificate]"),
+
+"preview_death_certificate",
+
+"result_death_certificate"
+
+);
+
+</script>
+
 
 
 <?php include('../../templates/footer.php'); ?>
