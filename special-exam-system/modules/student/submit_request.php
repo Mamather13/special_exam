@@ -19,6 +19,9 @@ $subject = $_POST['subject'];
 $section = $_POST['section'];
 $teacher_name = $_POST['teacher_name'];
 $reason = $_POST['reason'];
+$subject = $_POST['subject'];
+$subject_code = $_POST['subject_code'];
+
 
 /* upload files */
 
@@ -28,9 +31,11 @@ $parent_id_front = $_FILES['parent_id_front']['name'];
 
 move_uploaded_file(
 
-$_FILES['parent_id_front']['tmp_name'],
+$_FILES['parent_signature']['tmp_name'],
 
-"../../uploads/parent_id/".$parent_id_front
+"../../uploads/signatures/" .
+
+$_FILES['parent_signature']['name']
 
 );
 
@@ -143,11 +148,11 @@ $user_id = $conn->insert_id;
 
 $conn->query("INSERT INTO students
 
-(user_id,student_number,program,year_level,contact_number)
+(user_id,student_number,program,section,year_level,contact_number)
 
 VALUES
 
-('$user_id','$student_number','$program','$year_level','$contact_number')");
+('$user_id','$student_number','$program','$section','$year_level','$contact_number')");
 
 $student_id = $conn->insert_id;
 
@@ -159,7 +164,7 @@ $conn->query("INSERT INTO requests
 
 parent_id_front,parent_id_back,parent_selfie,parent_signature,
 
-medical_certificate,death_certificate,supporting_document,payment_status)
+medical_certificate,death_certificate,supporting_document,payment_statussubject_code, exam_type, reason)
 
 VALUES
 
@@ -167,7 +172,7 @@ VALUES
 
 '$parent_id_front','$parent_id_back','$parent_selfie','$signature_file',
 
-'$medical_certificate','$death_certificate','$supporting_document','$payment_status')");
+'$medical_certificate','$death_certificate','$supporting_document','$payment_status','$subject_code','$exam_type','$reason')");
 
 
 echo "Request submitted successfully";

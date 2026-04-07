@@ -36,17 +36,6 @@ $result = mysqli_query($conn,$query);
 <link rel="stylesheet" href="../../assets/css/student-dashboard.css">
 <link rel="stylesheet" href="../../assets/css/teacher-dashboard.css">
 
-<a href="monitoring.php">
-
-<button class="btn-secondary">
-
-View Full Report
-
-</button>
-
-</a>
-
-
 <nav class="navbar">
 
 <div class="nav-container">
